@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { register } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const user = await register(email, password);
+    if(user){
+        navigate("/", {replace : true})
+        toast.success("User created");
+    }
     console.log(user);
   };
 

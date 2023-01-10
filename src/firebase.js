@@ -5,8 +5,12 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 import { toast } from "react-hot-toast";
+import { login as loginHandle, logout as logoutHandle } from "./store/auth";
+import store from "./store";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -18,7 +22,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+export const auth = getAuth();
 
 export const register = async (email, password) => {
   try {
@@ -29,7 +33,6 @@ export const register = async (email, password) => {
     );
     return user;
   } catch (error) {
-    // toast.error(error.code);
     toast.error(error.message);
   }
 };
@@ -39,7 +42,6 @@ export const login = async (email, password) => {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
     return user;
   } catch (error) {
-    toast.error(error.code);
     toast.error(error.message);
   }
 };
@@ -47,6 +49,25 @@ export const login = async (email, password) => {
 export const logout = async () => {
   try {
     await signOut(auth);
+    localStorage.removeItem("user");
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    store.dispatch(loginHandle(user));
+  } else {
+    store.dispatch(logoutHandle());
+  }
+});
+
+export const update = async (data) => {
+  try {
+    await updateProfile(auth.currentUser, data);
+    toast.success("Profile Updated");
+    return true;
   } catch (error) {
     toast.error(error.message);
   }

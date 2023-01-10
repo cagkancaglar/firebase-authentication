@@ -1,28 +1,26 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { login } from "../firebase";
-import { login as loginHandle } from "../store/auth"
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const user = await login(email, password);
-    if(user) {
-        dispatch(loginHandle(user));
-        navigate("/", {replace: true})
+    if (user) {
+      navigate("/", { replace: true });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto grid gap-y-4 mt-5 py-4">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-xl mx-auto grid gap-y-4 mt-5 py-4"
+    >
       <div>
         <label htmlFor="" className="block text-sm font-medium text-gray-700">
           E-mail
@@ -51,8 +49,12 @@ const Login = () => {
           />
         </div>
       </div>
-      <button className="px-4 py-2 border border-transparent disabled:opacity-40 hover:bg-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all w-full text-md font-semibold rounded-md" type="submit" disabled={!password || !email}>
-      Login
+      <button
+        className="px-4 py-2 border border-transparent disabled:opacity-40 hover:bg-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all w-full text-md font-semibold rounded-md"
+        type="submit"
+        disabled={!password || !email}
+      >
+        Login
       </button>
     </form>
   );
