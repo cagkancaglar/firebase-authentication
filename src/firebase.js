@@ -7,6 +7,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendEmailVerification,
+  updatePassword,
 } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { login as loginHandle, logout as logoutHandle } from "./store/auth";
@@ -57,7 +59,15 @@ export const logout = async () => {
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    store.dispatch(loginHandle(user));
+    store.dispatch(
+      loginHandle({
+        displayName: user.displayName,
+        email: user.email,
+        eMailVerifiedi: user.emailVerified,
+        photoURL: user.photoURL,
+        uuid: user.uid,
+      })
+    );
   } else {
     store.dispatch(logoutHandle());
   }
@@ -67,6 +77,27 @@ export const update = async (data) => {
   try {
     await updateProfile(auth.currentUser, data);
     toast.success("Profile Updated");
+    return true;
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+export const eMailVerification = async () => {
+  try {
+    await sendEmailVerification(auth.currentUser);
+    toast.success(
+      `Verification mail has been sent to ${auth.currentUser.email} please check`
+    );
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+export const resetPassword = async (password) => {
+  try {
+    await updatePassword(auth.currentUser, password);
+    toast.success("Your password has been updated.");
     return true;
   } catch (error) {
     toast.error(error.message);
