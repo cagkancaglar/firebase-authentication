@@ -13,6 +13,7 @@ import {
 import { toast } from "react-hot-toast";
 import { login as loginHandle, logout as logoutHandle } from "./store/auth";
 import store from "./store";
+import { openModal } from "./store/modal"
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -100,6 +101,11 @@ export const resetPassword = async (password) => {
     toast.success("Your password has been updated.");
     return true;
   } catch (error) {
+    if(error.code === "auth/requires-recent-login"){
+      store.dispatch(openModal({
+        name: "re-auth-modal"
+      }))
+    }
     toast.error(error.message);
   }
 };
